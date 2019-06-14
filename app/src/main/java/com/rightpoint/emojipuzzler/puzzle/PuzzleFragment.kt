@@ -1,6 +1,7 @@
 package com.rightpoint.emojipuzzler.puzzle
 
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -52,6 +53,7 @@ class PuzzleFragment : Fragment() {
         active_answer.editText?.setOnEditorActionListener { textView, actionId, event ->
             if (actionId == EditorInfo.IME_NULL
                 && event.action == KeyEvent.ACTION_DOWN) {
+                Log.v("EmojiEntry", textView.text.toString())
                 viewModel.checkAnswer(textView.text)
             }
 

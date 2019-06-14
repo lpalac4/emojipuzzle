@@ -40,7 +40,7 @@ class PuzzleViewModel: ViewModel() {
         if(solution != null && solution) {
             feedBackLiveData.value = "That's right."
         } else {
-            feedBackLiveData.value = "Nope try again."
+            feedBackLiveData.value = "Nope try again. Hint: They're Drake Songs."
         }
     }
 
