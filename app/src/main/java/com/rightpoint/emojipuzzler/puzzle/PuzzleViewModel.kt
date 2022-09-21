@@ -13,7 +13,7 @@ class PuzzleViewModel: ViewModel() {
 
     var puzzle: EmojiPuzzle? = null
 
-    var feedBackLiveData: MutableLiveData<String> = MutableLiveData()
+    var feedBackLiveData: MutableLiveData<String> = MutableLiveData("Press Start Game to begin")
     var currentEmojiPuzzle: MutableLiveData<String> = MutableLiveData()
     var loading: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -26,6 +26,7 @@ class PuzzleViewModel: ViewModel() {
             delay(4000)
             puzzle = domain.getPuzzles()
             currentEmojiPuzzle.postValue(puzzle?.currentEmoji?.message)
+            feedBackLiveData.postValue("Enter your answer here")
             loading.postValue(false)
         }
     }
@@ -38,9 +39,9 @@ class PuzzleViewModel: ViewModel() {
     fun checkAnswer(text: CharSequence) {
         val solution = puzzle?.compareWithCurrentEmoji(text)
         if(solution != null && solution) {
-            feedBackLiveData.value = "That's right."
+            feedBackLiveData.value = "That's right"
         } else {
-            feedBackLiveData.value = "Nope try again. Hint: They're Drake Songs."
+            feedBackLiveData.value = "Nope try again. Hint: They're Drake Songs"
         }
     }
 
