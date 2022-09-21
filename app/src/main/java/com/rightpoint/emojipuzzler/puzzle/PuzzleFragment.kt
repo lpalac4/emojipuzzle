@@ -19,7 +19,6 @@ class PuzzleFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application).create(PuzzleViewModel::class.java)
     }
 
