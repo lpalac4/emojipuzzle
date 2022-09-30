@@ -2,16 +2,20 @@ package com.rightpoint.emojipuzzler.puzzle
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.rightpoint.domain.IDomainClient
-import com.rightpoint.domain.models.EmojiPuzzle
 import com.rightpoint.emojipuzzler.EmojiPuzzleApplication
-import kotlinx.coroutines.*
+import com.rightpoint.emojipuzzler.repository.PuzzleEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class PuzzleViewModel: ViewModel() {
 
-    private var domain: IDomainClient = EmojiPuzzleApplication.domainClient
+    // private var domain: IDomainClient = EmojiPuzzleApplication.domainClient
+    private var roomRepository = EmojiPuzzleApplication.roomRepositoryClient
 
-    var puzzle: EmojiPuzzle? = null
+    var puzzle: PuzzleEntity? = null
 
     var feedBackLiveData: MutableLiveData<String> = MutableLiveData("Press Start Game to begin")
     var currentEmojiPuzzle: MutableLiveData<String> = MutableLiveData()
@@ -23,11 +27,13 @@ class PuzzleViewModel: ViewModel() {
     fun startGame() {
         loading.value = true
         domainScope.launch {
-            delay(4000)
-            puzzle = domain.getPuzzles()
-            currentEmojiPuzzle.postValue(puzzle?.currentEmoji?.message)
-            feedBackLiveData.postValue("Enter your answer here")
+            roomRepository.initializeDatabase()
+            feedBackLiveData.postValue("Enter your answer here or hit Start Game to start over.")
             loading.postValue(false)
+            roomRepository.latestPuzzles.collectLatest {
+                puzzle = it
+                currentEmojiPuzzle.postValue(puzzle?.currentEmoji?.message)
+            }
         }
     }
 
@@ -48,5 +54,11 @@ class PuzzleViewModel: ViewModel() {
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
+    }
+
+    fun updateDatabase() {
+        domainScope.launch {
+            roomRepository.updateDatabase()
+        }
     }
 }

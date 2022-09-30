@@ -5,6 +5,7 @@ import androidx.emoji.bundled.BundledEmojiCompatConfig
 import androidx.emoji.text.EmojiCompat
 import com.rightpoint.domain.IDomainClient
 import com.rightpoint.domain.PuzzleDomainClient
+import com.rightpoint.emojipuzzler.repository.RoomRepositoryClient
 
 class EmojiPuzzleApplication: Application(){
 
@@ -13,9 +14,11 @@ class EmojiPuzzleApplication: Application(){
 
         val config = BundledEmojiCompatConfig(this)
         EmojiCompat.init(config)
+        roomRepositoryClient = RoomRepositoryClient(this)
     }
 
     companion object {
-        val domainClient: IDomainClient = PuzzleDomainClient()
+        var domainClient: IDomainClient = PuzzleDomainClient()
+        lateinit var roomRepositoryClient: RoomRepositoryClient
     }
 }

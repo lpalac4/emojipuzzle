@@ -38,5 +38,9 @@ fun Puzzle(context: Context, viewModel: PuzzleViewModel) {
                 Text("Start Game")
             }
         }
+
+        Button(onClick = { viewModel.updateDatabase() }) {
+            Text("Update Database")
+        }
     }
 }
