@@ -2,17 +2,23 @@ package com.rightpoint.emojipuzzler.puzzle
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.rightpoint.domain.IDomainClient
 import com.rightpoint.emojipuzzler.EmojiPuzzleApplication
 import com.rightpoint.emojipuzzler.repository.PuzzleEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PuzzleViewModel: ViewModel() {
+@HiltViewModel
+class PuzzleViewModel @Inject constructor() : ViewModel() {
 
-    // private var domain: IDomainClient = EmojiPuzzleApplication.domainClient
+    @Inject
+    lateinit var domain: IDomainClient
+
     private var roomRepository = EmojiPuzzleApplication.roomRepositoryClient
 
     var puzzle: PuzzleEntity? = null

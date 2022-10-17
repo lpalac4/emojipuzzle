@@ -9,7 +9,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.rightpoint.emojipuzzler.puzzle.Puzzle
 import com.rightpoint.emojipuzzler.puzzle.PuzzleViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: PuzzleViewModel
 
