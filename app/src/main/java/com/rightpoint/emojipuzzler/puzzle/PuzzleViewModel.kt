@@ -3,17 +3,27 @@ package com.rightpoint.emojipuzzler.puzzle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.rightpoint.domain.IDomainClient
-import com.rightpoint.domain.models.EmojiPuzzle
 import com.rightpoint.emojipuzzler.EmojiPuzzleApplication
-import kotlinx.coroutines.*
+import com.rightpoint.emojipuzzler.repository.PuzzleEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PuzzleViewModel: ViewModel() {
+@HiltViewModel
+class PuzzleViewModel @Inject constructor() : ViewModel() {
 
-    private var domain: IDomainClient = EmojiPuzzleApplication.domainClient
+    @Inject
+    lateinit var domain: IDomainClient
 
-    var puzzle: EmojiPuzzle? = null
+    private var roomRepository = EmojiPuzzleApplication.roomRepositoryClient
 
-    var feedBackLiveData: MutableLiveData<String> = MutableLiveData()
+    var puzzle: PuzzleEntity? = null
+
+    var feedBackLiveData: MutableLiveData<String> = MutableLiveData("Press Start Game to begin")
     var currentEmojiPuzzle: MutableLiveData<String> = MutableLiveData()
     var loading: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -23,10 +33,13 @@ class PuzzleViewModel: ViewModel() {
     fun startGame() {
         loading.value = true
         domainScope.launch {
-            delay(4000)
-            puzzle = domain.getPuzzles()
-            currentEmojiPuzzle.postValue(puzzle?.currentEmoji?.message)
+            roomRepository.initializeDatabase()
+            feedBackLiveData.postValue("Enter your answer here or hit Start Game to start over.")
             loading.postValue(false)
+            roomRepository.latestPuzzles.collectLatest {
+                puzzle = it
+                currentEmojiPuzzle.postValue(puzzle?.currentEmoji?.message)
+            }
         }
     }
 
@@ -38,14 +51,20 @@ class PuzzleViewModel: ViewModel() {
     fun checkAnswer(text: CharSequence) {
         val solution = puzzle?.compareWithCurrentEmoji(text)
         if(solution != null && solution) {
-            feedBackLiveData.value = "That's right."
+            feedBackLiveData.value = "That's right"
         } else {
-            feedBackLiveData.value = "Nope try again. Hint: They're Drake Songs."
+            feedBackLiveData.value = "Nope try again. Hint: They're Drake Songs"
         }
     }
 
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
+    }
+
+    fun updateDatabase() {
+        domainScope.launch {
+            roomRepository.updateDatabase()
+        }
     }
 }
